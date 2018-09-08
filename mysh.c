@@ -12,8 +12,6 @@
 
 #define MAXARGS 10
 
-int exec(char*, char**);//Function declaration for exec
-
 // All commands have at least a type. Have looked at the type, the code
 // typically casts the *cmd to some specific cmd type.
 struct cmd {
@@ -64,7 +62,7 @@ runcmd(struct cmd *cmd)
     if(ecmd->argv[0] == 0)
       _exit(0);
     //fprintf(stderr, "exec not implemented\n");
-    exec(ecmd->argv[0], ecmd->argv);
+    execv(ecmd->argv[0], ecmd->argv);
     printf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
 
@@ -331,8 +329,4 @@ parseexec(char **ps, char *es)
   }
   cmd->argv[argc] = 0;
   return ret;
-}
-//exec returns nothing on success, -1 otherwise
-int exec(char*, char**){
-
 }
