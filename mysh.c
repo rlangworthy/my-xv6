@@ -15,8 +15,14 @@
 // All commands have at least a type. Have looked at the type, the code
 // typically casts the *cmd to some specific cmd type.
 struct cmd {
-  int type;          //  ' ' (exec), | (pipe), '<' or '>' for redirection, 
+  int type;          //  ' ' (exec), | (pipe), '<' or '>' for redirection, ';' for list
 };
+
+struct listcmd {
+  int type;
+  struct cmd *left;
+  struct cmd *right;
+}
 
 struct execcmd {
   int type;              // ' '
@@ -63,7 +69,7 @@ runcmd(struct cmd *cmd)
       _exit(0);
     //fprintf(stderr, "exec not implemented\n");
     execv(ecmd->argv[0], ecmd->argv);
-    printf(2, "exec %s failed\n", ecmd->argv[0]);
+    fprintf(stderr, "exec %s failed\n", ecmd->argv[0]);
     break;
 
   case '>':
@@ -170,7 +176,7 @@ pipecmd(struct cmd *left, struct cmd *right)
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>";
+char symbols[] = "<|>;()";
 
 int
 gettoken(char **ps, char *es, char **q, char **eq)
