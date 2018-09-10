@@ -22,7 +22,7 @@ struct listcmd {
   int type;
   struct cmd *left;
   struct cmd *right;
-}
+};
 
 struct execcmd {
   int type;              // ' '
