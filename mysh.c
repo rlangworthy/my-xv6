@@ -89,9 +89,10 @@ runcmd(struct cmd *cmd)
 
   case ';':
     lcmd = (struct listcmd*)cmd;
-    if(fork1 == 0)
+    if(fork1() == 0)
       runcmd(lcmd->left);
-    wait();
+    int r;
+    wait(&r);
     runcmd(lcmd->right);
     break;
   }    
