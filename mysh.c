@@ -173,6 +173,19 @@ pipecmd(struct cmd *left, struct cmd *right)
   return (struct cmd*)cmd;
 }
 
+struct cmd*
+listcmd(struct cmd *left, struct cmd *right)
+{
+  struct listcmd *cmd;
+
+  cmd = malloc(sizeof(*cmd));
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->type = ';';
+  cmd->left = left;
+  cmd->right = right;
+  return (struct cmd*)cmd;
+}
+
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
@@ -221,7 +234,7 @@ peek(char **ps, char *es, char *toks)
   char *s;
   
   s = *ps;
-  while(s < es && strchr(whitespace, *s))
+  while(s < es && strchr(whitespace, *s))//skips over whitespace
     s++;
   *ps = s;
   return *s && strchr(toks, *s);
@@ -245,13 +258,13 @@ char
 }
 
 struct cmd*
-parsecmd(char *s)
+parsecmd(char *s)//called from main, where this starts, string s is the input
 {
   char *es;
   struct cmd *cmd;
 
-  es = s + strlen(s);
-  cmd = parseline(&s, es);
+  es = s + strlen(s); //makes es, end of s, a pointer to the end of the input buffer
+  cmd = parseline(&s, es); //send pointer to pointer of input, pointer to end of input
   peek(&s, es, "");
   if(s != es){
     fprintf(stderr, "leftovers: %s\n", s);
@@ -264,7 +277,11 @@ struct cmd*
 parseline(char **ps, char *es)
 {
   struct cmd *cmd;
-  cmd = parsepipe(ps, es);
+  cmd = parsepipe(ps, es);//sends the input to parsepipe first
+  if(peek(ps, es, ";")){
+    gettoken(ps, es, 0, 0);
+    cmd = listcmd(cmd, parseline(ps, es));
+  }
   return cmd;
 }
 
@@ -273,7 +290,7 @@ parsepipe(char **ps, char *es)
 {
   struct cmd *cmd;
 
-  cmd = parseexec(ps, es);
+  cmd = parseexec(ps, es);//sends the input to parseexec first
   if(peek(ps, es, "|")){
     gettoken(ps, es, 0, 0);
     cmd = pipecmd(cmd, parsepipe(ps, es));
@@ -306,6 +323,22 @@ parseredirs(struct cmd *cmd, char **ps, char *es)
 }
 
 struct cmd*
+parseblock(char **ps, char *es)
+{
+  struct cmd *cmd;
+
+  if(!peek(ps, es, "("))
+    fprintf(stderr, "parseblock");
+  gettoken(ps, es, 0, 0);
+  cmd = parseline(ps, es);
+  if(!peek(ps, es, ")"))
+    fprintf(stderr, "syntax - missing )");
+  gettoken(ps, es, 0, 0);
+  cmd = parseredirs(cmd, ps, es);
+  return cmd;
+}
+
+struct cmd*
 parseexec(char **ps, char *es)
 {
   char *q, *eq;
@@ -313,12 +346,15 @@ parseexec(char **ps, char *es)
   struct execcmd *cmd;
   struct cmd *ret;
   
+  if(peek(ps, es, "("))
+    return parseblock(ps, es);
+  
   ret = execcmd();
-  cmd = (struct execcmd*)ret;
+  cmd = (struct execcmd*)ret;//creates an execcmd to return, and a cmd to be manipulated
 
   argc = 0;
-  ret = parseredirs(ret, ps, es);
-  while(!peek(ps, es, "|")){
+  ret = parseredirs(ret, ps, es);//sends the execcmd to parseredirs, does nothing unless there's a redir
+  while(!peek(ps, es, "|);")){//check there are no more pipes
     if((tok=gettoken(ps, es, &q, &eq)) == 0)
       break;
     if(tok != 'a') {
@@ -331,8 +367,8 @@ parseexec(char **ps, char *es)
       fprintf(stderr, "too many args\n");
       exit(-1);
     }
-    ret = parseredirs(ret, ps, es);
+    ret = parseredirs(ret, ps, es);//parse redirs again
   }
-  cmd->argv[argc] = 0;
+  cmd->argv[argc] = 0;//null terminate argv array
   return ret;
 }
