@@ -54,6 +54,7 @@ runcmd(struct cmd *cmd)
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
+  struct listcmd *lcmd;
 
   if(cmd == 0)
     _exit(0);
@@ -84,6 +85,14 @@ runcmd(struct cmd *cmd)
     pcmd = (struct pipecmd*)cmd;
     fprintf(stderr, "pipe not implemented\n");
     // Your code here ...
+    break;
+
+  case ';':
+    lcmd = (struct listcmd*)cmd;
+    if(fork1 == 0)
+      runcmd(lcmd->left);
+    wait();
+    runcmd(lcmd->right);
     break;
   }    
   _exit(0);
