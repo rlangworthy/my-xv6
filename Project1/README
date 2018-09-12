@@ -1,3 +1,13 @@
-run the command
-sh project1runtest.sh
-to compile mysh.c and run the tests in project1test.sh
+The script in project1runtest.sh sets up and runs tests on mysh.c
+
+It copies echo from /bin/echo and uses that as a testing function.
+The tests run through various arrangements of the sequence and parentheses operators
+
+Each test is a list of echo commands, where the output should be
+First
+Second
+Third
+Fourth
+Fifth
+if the list is parsed and passed successfully.
+

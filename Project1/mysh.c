@@ -20,8 +20,8 @@ struct cmd {
 
 struct listcmd {
   int type;
-  struct cmd *left;
-  struct cmd *right;
+  struct cmd *left;//first command to be run
+  struct cmd *right;//rest of the commands
 };
 
 struct execcmd {
@@ -68,7 +68,6 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       _exit(0);
-    //fprintf(stderr, "exec not implemented\n");
     execv(ecmd->argv[0], ecmd->argv);
     fprintf(stderr, "exec %s failed\n", ecmd->argv[0]);
     break;
@@ -184,7 +183,9 @@ pipecmd(struct cmd *left, struct cmd *right)
   cmd->right = right;
   return (struct cmd*)cmd;
 }
-
+/*
+list constructor following the template of the other constructors
+*/
 struct cmd*
 listcmd(struct cmd *left, struct cmd *right)
 {
@@ -201,7 +202,7 @@ listcmd(struct cmd *left, struct cmd *right)
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>;()";
+char symbols[] = "<|>;()";//added the symbols
 
 int
 gettoken(char **ps, char *es, char **q, char **eq)
@@ -220,7 +221,7 @@ gettoken(char **ps, char *es, char **q, char **eq)
     break;
   case '|':
   case '<':
-  case '(':
+  case '('://added cases for new symbols
   case ')':
   case ';':
     s++;
@@ -293,7 +294,7 @@ parseline(char **ps, char *es)
 {
   struct cmd *cmd;
   cmd = parsepipe(ps, es);//sends the input to parsepipe first
-  if(peek(ps, es, ";")){
+  if(peek(ps, es, ";")){//after parsing the first command, check to see if it's the first in a list
     gettoken(ps, es, 0, 0);
     cmd = listcmd(cmd, parseline(ps, es));
   }
@@ -312,7 +313,7 @@ parsepipe(char **ps, char *es)
   }
   return cmd;
 }
-
+//does nothing if there is no redir command
 struct cmd*
 parseredirs(struct cmd *cmd, char **ps, char *es)
 {
@@ -336,49 +337,69 @@ parseredirs(struct cmd *cmd, char **ps, char *es)
   }
   return cmd;
 }
-
+//parses the inside of a parentheses block
 struct cmd*
 parseblock(char **ps, char *es)
 {
   struct cmd *cmd;
 
-  if(!peek(ps, es, "("))
-    fprintf(stderr, "parseblock");
-  gettoken(ps, es, 0, 0);
+  gettoken(ps, es, 0, 0);//strip starting parens
   cmd = parseline(ps, es);
-  if(!peek(ps, es, ")"))
-    //fprintf(stderr, "syntax - missing )");
-  gettoken(ps, es, 0, 0);
-  cmd = parseredirs(cmd, ps, es);
-  //struct execcmd *test = (struct execcmd *)cmd;
-  //fprintf(stdout, "barseblock %s dick\n", test->argv[1]);
+  gettoken(ps, es, 0, 0);//strip final parens
+
   return cmd;
 }
 
+/*
+Matchparens loads the outermost parenthetical phrase in ps into q and eq
+*/
+int
+matchparens(char **ps, char *es, char **q, char **eq){
+  int c = 0;
+  char *s = *ps;
+  *q = strchr(*ps, '(');
+  *eq = es;
+  while(s<es){
+    if(*s == ')'){
+      c--;
+      if(c==0){
+        *eq = s;
+        return eq-q;
+      }
+    }
+    if(*s == '('){
+      c++;
+    }
+    s++;
+  }
+  return eq - q;
+}
 
+/*
+Parseparens parses the block of commands inside a pair of parentheses.
+Then it replaces the queued commands with whitespace so they are not parsed again.
+Finally it adds the parsed blcok to the left side of a listcmd.
+*/
 struct cmd*
 parseparens(char **ps, char *es){
   char *q, *eq, *hq, *pq, *pqh;
   struct cmd *cmd;
 
-  if(strchr(*ps, '(')){
-    q = strchr(*ps, '(');
-    eq = strrchr(*ps, ')');
-  }
+  matchparens(ps, es, &q, &eq);//match the outermost parentheses
   if(q)
-    hq=q;
-  pq = mkcopy(q,eq);
-  pqh = pq;
-  cmd = parseblock(&pq, pq+strlen(pq));
-  free(pqh);
-  if(hq){
+    hq=q;//hold the front of the parens so it can be deleted later
+  pq = mkcopy(q,eq);//make a working copy of the parentheses, terminal null important
+  pqh = pq;//hold the start of the working copy so it can be freed
+  cmd = parseblock(&pq, pq+strlen(pq));//parseblock on the copy of parenthesized input
+  free(pqh);//free the copy
+  if(hq){//replace the parentheses just covered with whitespace
     while(hq<=eq){
       *hq=' ';
       hq++;
     }
   }
-  cmd = listcmd(cmd, parseline(ps, es));
-  return cmd;
+  cmd = listcmd(cmd, parseline(ps, es));//add the commands to the right side of a new list
+  return cmd;//return to parseexec
 
 }
 
@@ -390,11 +411,8 @@ parseexec(char **ps, char *es)
   struct execcmd *cmd;
   struct cmd *ret;
   
-  if((q=strchr(*ps, '('))){
-  //  fprintf(stdout, "parens %s\n", *ps);
+  if((q=strchr(*ps, '(')))//bump any parentheses to the front of the execution order
     return parseparens(ps, es);
-  }
-  //if(peekahead(ps, es, "("))
 
   ret = execcmd();
   cmd = (struct execcmd*)ret;//creates an execcmd to return, and a cmd to be manipulated
