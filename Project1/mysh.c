@@ -368,6 +368,7 @@ parseparens(char **ps, char *es){
   if(q)
     hq=q;
   pq = mkcopy(q,eq);
+  pqh = pq;
   cmd = parseblock(&pq, pq+strlen(pq));
   free(pqh);
   if(hq){
