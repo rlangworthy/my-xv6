@@ -87,13 +87,15 @@ runcmd(struct cmd *cmd)
     // Your code here ...
     break;
 
-  case ';':
-    lcmd = (struct listcmd*)cmd;
-    if(fork1() == 0)
-      runcmd(lcmd->left);
+  case ';'://executing listcmd
+    lcmd = (struct listcmd*)cmd;//cast cmd to listcmd
+    struct execcmd *test = (struct execcmd *)lcmd->left;
+    //fprintf(stdout, "listcmd %s \n", test->argv[1]);
+    if(fork1() == 0)//fork shell
+      runcmd(lcmd->left);//run first command in child
     int r;
-    wait(&r);
-    runcmd(lcmd->right);
+    wait(&r);//parent waits on child
+    runcmd(lcmd->right);//parent runs the rest of the list
     break;
   }    
   _exit(0);
@@ -345,12 +347,38 @@ parseblock(char **ps, char *es)
   gettoken(ps, es, 0, 0);
   cmd = parseline(ps, es);
   if(!peek(ps, es, ")"))
-    fprintf(stderr, "syntax - missing )");
+    //fprintf(stderr, "syntax - missing )");
   gettoken(ps, es, 0, 0);
   cmd = parseredirs(cmd, ps, es);
-  struct execcmd *test = (struct execcmd *)cmd;
-  fprintf(stdout, "barseblock %s dick\n", test->argv[2]);
+  //struct execcmd *test = (struct execcmd *)cmd;
+  //fprintf(stdout, "barseblock %s dick\n", test->argv[1]);
   return cmd;
+}
+
+
+struct cmd*
+parseparens(char **ps, char *es){
+  char *q, *eq, *hq, *pq, *pqh;
+  struct cmd *cmd;
+
+  if(strchr(*ps, '(')){
+    q = strchr(*ps, '(');
+    eq = strrchr(*ps, ')');
+  }
+  if(q)
+    hq=q;
+  pq = mkcopy(q,eq);
+  cmd = parseblock(&pq, pq+strlen(pq));
+  free(pqh);
+  if(hq){
+    while(hq<=eq){
+      *hq=' ';
+      hq++;
+    }
+  }
+  cmd = listcmd(cmd, parseline(ps, es));
+  return cmd;
+
 }
 
 struct cmd*
@@ -361,21 +389,25 @@ parseexec(char **ps, char *es)
   struct execcmd *cmd;
   struct cmd *ret;
   
-  if(peek(ps, es, "("))
-    return parseblock(ps, es);
+  if((q=strchr(*ps, '('))){
+  //  fprintf(stdout, "parens %s\n", *ps);
+    return parseparens(ps, es);
+  }
+  //if(peekahead(ps, es, "("))
+
   ret = execcmd();
   cmd = (struct execcmd*)ret;//creates an execcmd to return, and a cmd to be manipulated
 
   argc = 0;
   ret = parseredirs(ret, ps, es);//sends the execcmd to parseredirs, does nothing unless there's a redir
-  while(!peek(ps, es, "|);")){//check there are no more pipes
+  while(!peek(ps, es, "|);")){//crawls through tokens until terminal character
     if((tok=gettoken(ps, es, &q, &eq)) == 0)
       break;
     if(tok != 'a') {
       fprintf(stderr, "syntax error\n");
       exit(-1);
     }
-    cmd->argv[argc] = mkcopy(q, eq);
+    cmd->argv[argc] = mkcopy(q, eq);//loads argv with a 
     argc++;
     if(argc >= MAXARGS) {
       fprintf(stderr, "too many args\n");

@@ -1,0 +1,3 @@
+run the command
+sh project1runtest.sh
+to compile mysh.c and run the tests in project1test.sh
