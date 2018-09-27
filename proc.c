@@ -110,7 +110,7 @@ found:
   sp -= sizeof *p->context;
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
-  memset(p->traps, 0, sizeof *p->traps); //reset trap count
+  memset(p->traps, 0, sizeof(int)*NSYSCALLS); //reset trap count
   p->context->eip = (uint)forkret;
 
   return p;
