@@ -93,5 +93,5 @@ sys_uptime(void)
 int 
 sys_countTraps(void)
 {
-   return sizeof(myproc()->name);
+   return sizeof(myproc()->traps);
 }
