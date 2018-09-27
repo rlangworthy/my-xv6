@@ -97,6 +97,6 @@ sys_countTraps(void)
   for(i = 0;i<NSYSCALLS;i++){
     cprintf("%d %d\n", i+1, myproc()->traps[i]);
   }
-  return myproc()->pid;
+  return sizeof *(myproc()->traps);
   
 }
