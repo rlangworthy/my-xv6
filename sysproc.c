@@ -122,7 +122,6 @@ sys_countTraps(void)
 {
   struct proc *p =myproc();
   int i;
-  int total = 0;
   for(i = 0;i<NSYSCALLS;i++){
     cprintf("%s %d\n", syscalllist[i], p->traps[i]);
   }
