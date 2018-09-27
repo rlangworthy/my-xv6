@@ -95,7 +95,7 @@ sys_countTraps(void)
 {
   int i;
   for(i = 0;i<22;i++){
-    cprintf("%d %d", i, myproc()->traps[i]);
+    cprintf("%d %d\n", i+1, myproc()->traps[i]);
   }
   return 1;
   
