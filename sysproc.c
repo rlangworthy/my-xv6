@@ -89,3 +89,9 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int 
+sys_countTraps(void)
+{
+   return proc->sz;
+}
