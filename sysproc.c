@@ -32,7 +32,7 @@ char *syscalllist[NSYSCALLS]= {
 [SYS_mkdir]   ="mkdir",
 [SYS_close]   ="close",
 [SYS_countTraps] ="countTraps",
-}
+};
 
 int
 sys_fork(void)
