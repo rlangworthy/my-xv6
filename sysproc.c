@@ -93,5 +93,10 @@ sys_uptime(void)
 int 
 sys_countTraps(void)
 {
-   return myproc()->traps[13];
+  int i;
+  for(i = 0;i<22;i++){
+    cprintf("%d %d", i, myproc()->traps[i]);
+  }
+  return 1;
+  
 }
