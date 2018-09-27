@@ -8,7 +8,7 @@
 #include "proc.h"
 #include "syscall.h"
 
-char *syscalllist[NSYSCALLS]= {
+char *syscalllist[NSYSCALLS+1]= {
 [0]           ="total syscalls",
 [SYS_fork]    ="fork",
 [SYS_exit]    ="exit",
