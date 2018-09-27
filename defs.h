@@ -1,3 +1,5 @@
+#define N_SYSCALLS 22
+
 struct buf;
 struct context;
 struct file;

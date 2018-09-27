@@ -94,9 +94,9 @@ int
 sys_countTraps(void)
 {
   int i;
-  for(i = 0;i<22;i++){
+  for(i = 0;i<N_SYSCALLS;i++){
     cprintf("%d %d\n", i+1, myproc()->traps[i]);
   }
-  return 1;
+  return myproc()->pid;
   
 }
