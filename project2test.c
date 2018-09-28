@@ -30,10 +30,9 @@
 	return 1;
 }
 */
-
 int main(void){
 
-	tableResetTest();
+	//tableResetTest();
 
 
     countTraps();
