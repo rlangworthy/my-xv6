@@ -11,7 +11,6 @@ int tableResetTest(void){
 	for(i = 0; i < 100; i++){
 		pid = fork();
 		if(pid > 0){
-			printf(1, "Parent trap count \n");
 			wait();
 		}
 		if(pid == 0){
@@ -21,6 +20,8 @@ int tableResetTest(void){
 			}
 		}
 	}
+	printf(1, "Parent trap count \n");
+	countTraps();
 	return 1;
 }
 int main(void){
