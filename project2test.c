@@ -15,10 +15,6 @@ int tableResetTest(void){
 		}
 		if(pid == 0){
 			uptime();
-			if(i == 3){
-				printf(1, "Child 3 trap count \n");
-				countTraps();
-			}
 			if(i == 99){
 				printf(1, "Child 100 trap count \n");
 				countTraps();
@@ -36,6 +32,6 @@ int main(void){
 	tableResetTest();
 
 
-    //countTraps();
+    countTraps();
     exit();
 }
