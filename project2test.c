@@ -1,17 +1,11 @@
 #include "types.h"
-#include "defs.h"
-#include "param.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "x86.h"
-#include "proc.h"
-#include "syscall.h"
-
+#include "stat.h"
+#include "user.h"
 
 //Testing to see if the trap table resets by brute forcing through the process table.
 //There are a total number of 64 available processes.
 //I'm going to have the parent fork 100 times, so I'm guaranteed to get the same proc struct more than once as a child.
-int tableResetTest(void){
+/*int tableResetTest(void){
 	int pid;
 	int i;
 	for(i = 0; i < 100; i++){
@@ -35,6 +29,7 @@ int tableResetTest(void){
 	}
 	return 1;
 }
+*/
 
 int main(void){
 
