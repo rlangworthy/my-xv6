@@ -14,6 +14,10 @@ int tableResetTest(void){
 			wait();
 		}
 		if(pid == 0){
+			if(i == 3){
+				printf(1, "Child 3 trap count \n");
+				countTraps();
+			}
 			if(i == 99){
 				printf(1, "Child 100 trap count \n");
 				countTraps();
