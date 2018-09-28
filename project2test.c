@@ -18,12 +18,14 @@ int tableResetTest(void){
 				printf(1, "%d Child 100 trap count \n", i);
 				//countTraps();
 			}
+			exit();
 		}
 	}
 	printf(1, "Parent trap count \n");
 	//countTraps();
 	return 1;
 }
+
 int main(void){
 
 	tableResetTest();
