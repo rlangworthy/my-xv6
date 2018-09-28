@@ -125,6 +125,6 @@ sys_countTraps(void)
   for(i = 0;i<NSYSCALLS+1;i++){
     cprintf("%s %d\n", syscalllist[i], p->traps[i]);
   }
-  return sizeof(int)*NSYSCALLS;
+  return p->pid;
   
 }
