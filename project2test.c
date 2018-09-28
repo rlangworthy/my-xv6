@@ -25,7 +25,7 @@ int tableResetTest(void){
 }
 int main(void){
 
-	//tableResetTest();
+	tableResetTest();
 
 
     //countTraps();
