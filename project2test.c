@@ -15,13 +15,13 @@ int tableResetTest(void){
 		}
 		if(pid == 0){
 			if(i == 99){
-				printf(1, "Child 100 trap count \n");
-				countTraps();
+				printf(1, "%d Child 100 trap count \n", i);
+				//countTraps();
 			}
 		}
 	}
 	printf(1, "Parent trap count \n");
-	countTraps();
+	//countTraps();
 	return 1;
 }
 int main(void){
