@@ -9,15 +9,16 @@ int tableResetTest(void){
 	int pid;
 	int i;
 	for(i = 0; i < 100; i++){
-		pid = fork()
+		pid = fork();
 		if(pid > 0){
 			printf(1, "Parent trap count \n");
 			wait();
 		}
 		if(pid == 0){
-			if(i == 99)
+			if(i == 99){
 				printf(1, "Child 100 trap count \n");
 				countTraps();
+			}
 		}
 	}
 	return 1;
