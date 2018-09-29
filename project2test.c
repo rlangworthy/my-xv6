@@ -1,6 +1,12 @@
+#include "param.h"
 #include "types.h"
 #include "stat.h"
 #include "user.h"
+#include "fs.h"
+#include "fcntl.h"
+#include "syscall.h"
+#include "traps.h"
+#include "memlayout.h"
 
 //Testing to see if the trap table resets by brute forcing through the process table.
 //There are a total number of 64 available processes.
@@ -29,8 +35,15 @@ int tableResetTest(void){
 
 int main(void){
 
+	int fd = open("outfile", O_CREATE);
+	int fds[2];
+	fds[0] = 1;
+	fds[1] = fd;
+	pipe(fds);
+
 	tableResetTest();
 
+	close(fd);
 
     countTraps();
     exit();
