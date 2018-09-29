@@ -35,16 +35,22 @@ int tableResetTest(void){
 
 int main(void){
 
-	int fd = open("outfile", O_CREATE);
-	int fds[2];
-	fds[0] = 1;
-	fds[1] = fd;
-	pipe(fds);
+	//int fds[2];
+	//pipe(fds);
+	if(fork() == 0) {
+        close(1);
+        int fd = open("outfile", O_CREATE);
+        tableResetTest();
+        close(fd);
+        exit();
+    } else {
+    	wait();
+    }
 
-	tableResetTest();
+
 
 	close(fd);
 
-    countTraps();
+    countTraps();	
     exit();
 }
