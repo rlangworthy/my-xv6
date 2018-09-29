@@ -48,9 +48,6 @@ int main(void){
     }
 
 
-
-	close(fd);
-
     countTraps();	
     exit();
 }
