@@ -1,0 +1,50 @@
+Name
+	countTraps
+
+Synopsis
+	int
+	countTraps(void);
+
+Description
+	CountTraps prints to the console the total number of times the user program has trapped to the kernel, followed by a list of those calls separated by type of call.
+
+Return Values
+	CounTraps returns zero on success and -1 on failure.
+
+Details
+	CountTraps was implemented by adding an array of integers of size NSYSCALLS + 1 to the proc struct to count trap calls with the first element of the array reserved for the total number of trap calls.
+	This array is incrememnted in syscall, so each syscall is recorded in the appropriate process before being executed.
+	The array is zeroed out in allocproc, so each new process starts with zero trap calls.  
+	A new macro, NSYSCALLS, was added to params.h to avoid having a magic number floating around.  This will need to be updated should any new syscalls be added.
+
+Change Log
+	sysproc.c
+	    --the funciton sys_countTraps(void) prints out the list of syscalls made by the calling process
+	    --a list of system calls and string representations of them is at the top of the file to keep sys_countTraps clean
+
+
+	syscall.c
+	    --extern int sys_countTraps(void); added to make sys_countTraps callable from this file when defined in sysproc.c
+	    --sys_countTraps added to syscalls[]()
+	    --syscall() edited to add 1 to the total number of syscalls, and 1 to count of appropriate type of syscall
+
+
+	user.h
+	    --countTraps() added here for user level definition of the system call
+
+	usys.S
+	    --SYSCALL(countTraps) added to allow program called from user space to trap into kernel
+	
+	syscall.h
+	    --SYS_countTraps given a system call number
+
+	param.h
+	    --NSYSCALLS macro defined to avoid magic number usage
+
+	proc.h
+	    --traps array added to proc to keep track of trap calls a process makes
+	
+	proc.c
+    	--allocproc() edited to zero out traps array whenever a new process is allocated
+
+

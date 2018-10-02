@@ -11,6 +11,7 @@
 //Testing to see if the trap table resets by brute forcing through the process table.
 //There are a total number of 64 available processes.
 //I'm going to have the parent fork 100 times, so I'm guaranteed to get the same proc struct more than once as a child.
+//If the child only has a count of one uptime trap, then I know it resets the countTraps array
 int tableResetTest(void){
 	int pid;
 	int i;
@@ -34,20 +35,10 @@ int tableResetTest(void){
 }
 
 int main(void){
-
-	//int fds[2];
-	//pipe(fds);
-	if(fork() == 0) {
-        close(1);
-        int fd = open("outfile", O_CREATE);
-        tableResetTest();
-        close(fd);
-        exit();
-    } else {
-    	wait();
-    }
-
-
+    
+    tableResetTest();
+    
     countTraps();	
+    
     exit();
 }

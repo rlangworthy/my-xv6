@@ -138,7 +138,8 @@ syscall(void)
 
   num = curproc->tf->eax;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    curproc->traps[num]++;
+    if(num < NELEM(curproc->traps) +1)
+      curproc->traps[num]++;
     curproc->traps[0]++;
     curproc->tf->eax = syscalls[num]();
   } else {
