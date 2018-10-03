@@ -110,8 +110,8 @@ syscall.c:17-23
 26	}
 
 sysfile.c:29-30
-29	if(fd < 0 || fd >= NOFILE || (f=myproc()->ofile[fd]) == 0) //------- if we pass a null pointer it breaks here, see bottom
-30	    return -1;											   //a fd that doesn't point to a real file returns -1 here
+29	if(fd < 0 || fd >= NOFILE || (f=myproc()->ofile[fd]) == 0) 
+30	    return -1;											   
 
 syscall.c:140
 140		curproc->tf->eax = syscalls[num]();
@@ -144,64 +144,6 @@ usys.S:9
 
 
 Syscall falls through to the rest of trap.c, but with the syscall return value stored in %eax.  This then returns to trapasm and falls through to trapret, which pops the registers placed on the stack by alltraps back into the appropriate register.  Then it calls iret, a return funciton that also changes the permissions back from kernel to user.  Usys then returns back to the function that originally called the system call.
-
-
------------
-
-vectors.S:69-72
-69	 .globl vector14                                                                                               
-70	 vector14:                                                                                                     
-71	   pushl $14                                                                                                   
-72	   jmp alltraps 
-
-trapasm.S:5-20
-4	.globl alltraps
-5	alltraps:
-6	  # Build trap frame.
-7	  pushl %ds
-8	  pushl %es
-9	  pushl %fs
-10	  pushl %gs
-11	  pushal
-12	  
-13	  # Set up data segments.
-14	  movw $(SEG_KDATA<<3), %ax
-15	  movw %ax, %ds
-16	  movw %ax, %es
-17
-18	  # Call trap(tf), where tf=%esp
-19	  pushl %esp
-20	  call trap
-
-trap.c:
-36	void
-37	trap(struct trapframe *tf)
-38	{
-	...
-49	  switch(tf->trapno){
-	  ...
-82	  default:
-83	    if(myproc() == 0 || (tf->cs&3) == 0){
-	    ...
-88	    }
-89	    // In user space, assume process misbehaved.
-90	    cprintf("pid %d %s: trap %d err %d on cpu %d "
-91	            "eip 0x%x addr 0x%x--kill proc\n",
-92	            myproc()->pid, myproc()->name, tf->trapno,
-93	            tf->err, cpuid(), tf->eip, rcr2());
-94	    myproc()->killed = 1;
-95	    }
-96
-97		// Force process exit if it has been killed and is in user space.
-98		// (If it is still executing in the kernel, let it keep running
-99		// until it gets to the regular system call return.)
-100		if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
-101		    exit();
-
-if we pass a null pointer then up above at sysfile.c:30 it attempts to dereference a null pointer, triggering a T_PGFLT interrupt.  This goes through the same vectoring and 
-
-
-
 
 
 

@@ -34,9 +34,12 @@ int tableResetTest(void){
 	return 1;
 }
 
-int main(void){
+int main((int argc, char *argv[]){
     
-    tableResetTest();
+    if(argc == 1){
+    	tableResetTest();
+    	exit();
+    }
     
     countTraps();	
     
