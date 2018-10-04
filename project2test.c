@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
     }
     
     int i = 0;
-    int runs = (int)&argv[1];
+    int runs = (int)*argv[1];
     printf(1, "%d\n", runs);
     if(runs > 0 && runs < 100){
 	    for(i=0;i<runs;i++)
