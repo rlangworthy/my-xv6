@@ -7,7 +7,7 @@
 #include "syscall.h"
 #include "traps.h"
 #include "memlayout.h"
-#include <string.h>
+#include "string.h"
 
 //Testing to see if the trap table resets by brute forcing through the process table.
 //There are a total number of 64 available processes.
