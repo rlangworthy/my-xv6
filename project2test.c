@@ -49,8 +49,8 @@ int main(int argc, char *argv[]){
     
     int i = 0;
     int runs;
-    if(argv[1]>0 && argv[1] < 100)
-    	runs=argv[1];
+    if(&argv[1]>0 && &argv[1] < 100)
+    	runs=&argv[1];
     else{
     	printf(1, "Argument too large\n");
     	exit();
