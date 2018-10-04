@@ -37,11 +37,28 @@ int tableResetTest(void){
 int main(int argc, char *argv[]){
     
     if(argc == 1){
-    	tableResetTest();
+    	if(fork() == 0){
+    		tableResetTest();
+    		exit();
+    	}
+    	else{
+    		wait();
+    	}
     	exit();
     }
-
-    countTraps();	
     
+    int i = 0;
+    int runs;
+    if(argv[1]>0 && argv[1] < 100)
+    	runs=argv[1];
+    else{
+    	printf(1, "Argument too large\n");
+    	exit();
+    }
+    
+    for(i=0;i<runs;i++)
+    	uptime();
+
+    countTraps();
     exit();
 }
