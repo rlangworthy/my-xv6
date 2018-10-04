@@ -48,8 +48,9 @@ int main(int argc, char *argv[]){
     }
     
     int i = 0;
+    printf(1, "%d\n", strlen(argv[1]));
     int runs = ((int) (*argv[1])) -48;
-    if(runs > 0 && runs < 10  && strlen(argv[1])==0){
+    if(runs > 0 && runs < 10){
 	    for(i=0;i<runs;i++)
 	    	uptime();
 	    countTraps();
