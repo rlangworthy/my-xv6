@@ -49,11 +49,12 @@ int main(int argc, char *argv[]){
     
     int i = 0;
     int runs = &argv[1];
-    if(runs > 0 && runs < 100)
+    if(runs > 0 && runs < 100){
 	    for(i=0;i<runs;i++)
 	    	uptime();
 	    countTraps();
-	    exit();    
+	    exit();
+	}    
 	else{
     	printf(1, "Argument too large\n");
     	exit();
