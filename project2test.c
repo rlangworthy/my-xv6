@@ -7,7 +7,6 @@
 #include "syscall.h"
 #include "traps.h"
 #include "memlayout.h"
-#include "string.h"
 
 //Testing to see if the trap table resets by brute forcing through the process table.
 //There are a total number of 64 available processes.
@@ -49,9 +48,8 @@ int main(int argc, char *argv[]){
     }
     
     int i = 0;
-    int runs = atoi(argv[1]);
-    printf(1, "%d\n", runs);
-    if(runs > 0 && runs < 100){
+    int runs = ((int) (*argv[1])) -48;
+    if(runs > 0 && runs < 10){
 	    for(i=0;i<runs;i++)
 	    	uptime();
 	    countTraps();
