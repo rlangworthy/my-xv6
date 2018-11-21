@@ -1,7 +1,9 @@
 #define T_DIR  1   // Directory
 #define T_FILE 2   // File
 #define T_DEV  3   // Device
+#define T_SMALL 4  //Small File
 
+#define T_SMALL_SIZE 52 //Small File Size
 struct stat {
   short type;  // Type of file
   int dev;     // File system's disk device

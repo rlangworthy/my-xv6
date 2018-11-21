@@ -1,0 +1,2 @@
+sysfile.c sys_open small file create call
+fs.c readi and writei given T_SMALL things

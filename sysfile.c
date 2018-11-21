@@ -297,7 +297,11 @@ sys_open(void)
   begin_op();
 
   if(omode & O_CREATE){
-    ip = create(path, T_FILE, 0, 0);
+    if(omode & O_SMALL){
+      ip = create(path, T_SMALL, 0, 0);
+    } else {
+      ip = create(path, T_FILE, 0, 0);
+    }
     if(ip == 0){
       end_op();
       return -1;
