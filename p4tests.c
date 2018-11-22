@@ -32,7 +32,7 @@ opentest(void)
   char r[strlen(w)];
   write(fd, w,strlen(w));
   printf(stdout, "write\n");
-  read(fd, r, strlen(r));
+  read(fd, r, strlen(w));
   printf(stdout, "read %s\n", r);
   printf(stdout, "open test ok\n");
 }
