@@ -31,3 +31,11 @@ opentest(void)
   }
   printf(stdout, "open test ok\n");
 }
+
+int
+main(int argc, char const *argv[])
+{
+    opentest();
+
+    return 0;
+}
