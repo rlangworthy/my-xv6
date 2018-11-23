@@ -572,6 +572,7 @@ if(ip->type == T_SMALLFILE && off + n > ((NDIRECT + 1) * 4))
     return n;
   } else{
       //code for turning small file to regular file
+      cprintf("we go here");
       ip->type = T_FILE;
       int size = ip->size;
       char buf[((NDIRECT + 1) * 4)];
@@ -579,6 +580,7 @@ if(ip->type == T_SMALLFILE && off + n > ((NDIRECT + 1) * 4))
       memset((void*) ip->addrs, 0, ((NDIRECT + 1) * 4));
       iupdate(ip);
       writei(ip, buf, off, size);
+  
   }
 
 
