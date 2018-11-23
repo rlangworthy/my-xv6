@@ -548,7 +548,7 @@ writei(struct inode *ip, char *src, uint off, uint n)
     n = MAXFILE * BSIZE-off;
 
 
-	cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
+	//cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
 //small file
 
 if(ip->type == T_SMALLFILE){

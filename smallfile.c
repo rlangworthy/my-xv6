@@ -149,6 +149,7 @@ void test4(){
 	}
 
 	write(fd, buf2, MAX);
+	n=0;
 	n=write(fd, buf2, MAX);
 
 	if(n != MAX){
@@ -165,7 +166,7 @@ void test4(){
 		printf(1, "Failed to get stat on the small file\n");
 			test_failed();
 	} else {
-		printf(1, "File Type: %i \n File Size: %i", st.type, st.size);
+		printf(1, "File Type: %i \n File Size: %i", (int)st.type, (int)st.size);
 	}
 
 
