@@ -411,6 +411,8 @@ itrunc(struct inode *ip)
   int i, j;
   struct buf *bp;
   uint *a;
+  if(ip->type == T_SMALL)
+    return;
 
   for(i = 0; i < NDIRECT; i++){
     if(ip->addrs[i]){
