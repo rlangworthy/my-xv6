@@ -1,0 +1,16 @@
+Changes:
+
+stat.h
+	#define T_SMALLFILE 4  // created new file type - SMALLFILE
+
+fcntl.h
+	#define O_SMALLFILE 0x400  // flag O_SMALLFILE
+
+sysfile.c
+	modified sys_open, create()
+fs.c
+	modified itrunc(), readi(), writei()
+
+smallfile.c
+	contains tests
+	

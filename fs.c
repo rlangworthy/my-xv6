@@ -411,8 +411,20 @@ itrunc(struct inode *ip)
   int i, j;
   struct buf *bp;
   uint *a;
-  if(ip->type == T_SMALL)
+
+ if(ip->type == T_SMALLFILE)
+  {
+    for(i = 0; i <= NDIRECT; i++){
+      if(ip->addrs[i]){
+         ip->addrs[i] = 0;
+       }
+     }
+    ip->size = 0;
+    iupdate(ip);
     return;
+  }
+
+
 
   for(i = 0; i < NDIRECT; i++){
     if(ip->addrs[i]){
@@ -457,6 +469,12 @@ readi(struct inode *ip, char *dst, uint off, uint n)
 {
   uint tot, m;
   struct buf *bp;
+  //small file
+  if(ip->type == T_SMALLFILE){
+	cprintf("\nOffset = %d, number of bytes = %d, and ip->size is %d\n", off, n, ip->size);
+	}  
+
+
 
   if(ip->type == T_DEV){
     if(ip->major < 0 || ip->major >= NDEV || !devsw[ip->major].read)
@@ -466,24 +484,46 @@ readi(struct inode *ip, char *dst, uint off, uint n)
 
   if(off > ip->size || off + n < off)
     return -1;
+
+
   if(off + n > ip->size)
     n = ip->size - off;
 
-  if(ip->type == T_SMALL){
-    if(n > T_SMALL_SIZE)
-      return -1;
+//small file
+//the inode has slots for block addresses: NDIRECT for 12 direct pointers and
+// 1 for INDIRECT pointer. Thus we can store  (NDIRECT+1)*4
 
-    memmove(dst, ip->addrs, n);
-    iupdate(ip);
-    return n;
-  }
-  
-  for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+//if the file is less than (NDIRECT+1)*4 we will store it in inode
+
+if (ip->type ==T_SMALLFILE){
+	cprintf("Its a smallfile. File size : %d\n", ip->size);
+	cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
+	//truncating if n>53 bytes
+	cprintf("NDIRECT : %d\n", NDIRECT);
+/*	if(off + n > ((NDIRECT + 1) * 4))
+   	 {
+      		n = ((NDIRECT + 1) * 4) - off;
+   	 }
+	cprintf("Final n : %d\n", n);
+*/
+	memmove(dst, (void*)((uint)ip->addrs+off), n);
+    	cprintf("Character read : %c\n", dst);
+	return n;
+	
+}
+for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
+    uint sector_number = bmap(ip, off/BSIZE);
+    if(sector_number == 0){ //failed to find block
+      panic("readi: trying to read a block that was never allocated");
+    }
+    
+    bp = bread(ip->dev, sector_number);
     m = min(n - tot, BSIZE - off%BSIZE);
     memmove(dst, bp->data + off%BSIZE, m);
     brelse(bp);
   }
+
+
   return n;
 }
 
@@ -505,23 +545,49 @@ writei(struct inode *ip, char *src, uint off, uint n)
   if(off > ip->size || off + n < off)
     return -1;
   if(off + n > MAXFILE*BSIZE)
-    return -1;
-  
-  if(ip->type == T_SMALL){
-    if(n > T_SMALL_SIZE)
-      return -1;
+    n = MAXFILE * BSIZE-off;
 
-    memmove(ip->addrs, src, n);
-    if(n > 0 && off > ip->size){
-      ip->size = off;
+
+	cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
+//small file
+
+if(ip->type == T_SMALLFILE)
+  {
+    cprintf("\nWriting to a small file\n");
+    cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
+    //Truncating number of bytes to 52 if n exceeds the space of 53 bytes
+    if(off + n > ((NDIRECT + 1) * 4))
+    {
+      n = ((NDIRECT + 1) * 4) - off;
     }
+    memmove((void*) ((uint)ip->addrs + off), src, n);
+    cprintf("Character written : %c\n", src);   
 
+
+    if(n > 0){
+      ip->size = n+off;
+    }
     iupdate(ip);
+    cprintf("\nFile size : %d\n", ip->size);
     return n;
   }
 
+
+	
+
+
   for(tot=0; tot<n; tot+=m, off+=m, src+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+
+ 	uint sector_number = bmap(ip, off/BSIZE);
+        if(sector_number == 0){ //failed to find block
+     		 n = tot; //return number of bytes written so far
+      		break;
+   	 }	
+
+
+
+
+    bp = bread(ip->dev, sector_number);
     m = min(n - tot, BSIZE - off%BSIZE);
     memmove(bp->data + off%BSIZE, src, m);
     log_write(bp);

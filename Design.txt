@@ -1,0 +1,10 @@
+Design:
+
+If the file is of 52 bytes of less, its stored in the node of the file itself.
+
+The modifications were done in fs.c file, specifically: in readi(), writei() and trunci() fucntions. In readi(), the file is directly read from the inode's address pointers if the file size is less than 52 bytes. 
+
+
+In writei(), the file is written into the address blocks if the file is less than 52 bytes. In trunci(), the blocks corresponding to the direct and indirect pointers are not removed if the files are of the type T_SMALLFILE.
+
+Also, if the file is of type T_SMALLFILE, and a user is trying to read/write more than the file size, only the maximum number of bytes (either the file size or 52 bytes) is allowed to be read/written respectively.
