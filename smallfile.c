@@ -112,6 +112,65 @@ void test3(){
 	
 }
 
+void test4(){
+	printf(1,"===Test 3. Reading smallFile.txt after write===\n");
+	char *fileName = "test_file.txt";
+ 	char buf2[MAX];
+	struct stat st;
+	int fd, n;
+
+	if((fd = open(fileName, O_RDWR)) < 0){
+   		printf(1, "Failed to open the small file\n");
+    	test_failed();
+  	}else{
+		printf(1, "Opened the file after write\n");
+		test_passed();
+	}	
+
+	n = read(fd, buf2, MAX+10);
+	//attempts to read 35 bytes but read 25
+	//printf(1, "Number of bytes read : %d\n", n);
+	if(n != MAX){
+		printf(1, "Read failed!\n");
+			test_failed();
+	}
+	else{
+		printf(1, "Number of bytes read : %d\n", n);
+		printf(1, "String Read : %s\n", buf2);
+		test_passed();
+		//close(fd);
+	}
+
+	if(fstat(fd, &st) < 0){
+		printf(1, "Failed to get stat on the small file\n");
+			test_failed();
+	} else {
+		printf(1, "File Type: %i", st.type);
+	}
+
+	write(fd, buf2, MAX);
+	n=write(fd, buf2, MAX);
+
+	if(n != MAX){
+		printf(1, "Write failed!\n");
+		test_failed();
+	}
+	else{
+		printf(1, "Number of bytes wrote : %d\n", n);
+		printf(1, "String Read : %s\n", buf2);
+		test_passed();
+		//close(fd);
+	}
+	if(fstat(fd, &st) < 0){
+		printf(1, "Failed to get stat on the small file\n");
+			test_failed();
+	} else {
+		printf(1, "File Type: %i \n File Size: %i", st.type, st.size);
+	}
+
+
+}
+
 
 
 int main(){

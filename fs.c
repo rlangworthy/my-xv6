@@ -551,7 +551,7 @@ writei(struct inode *ip, char *src, uint off, uint n)
 	cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
 //small file
 
-if(ip->type == T_SMALLFILE)
+if(ip->type == T_SMALLFILE && off + n > ((NDIRECT + 1) * 4))
   {
     cprintf("\nWriting to a small file\n");
     cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
@@ -570,6 +570,15 @@ if(ip->type == T_SMALLFILE)
     iupdate(ip);
     cprintf("\nFile size : %d\n", ip->size);
     return n;
+  } else{
+      //code for turning small file to regular file
+      ip->type = T_FILE;
+      int size = ip->size;
+      char buf[((NDIRECT + 1) * 4)];
+      memmove(buf, (void*)ip->addrs, ip->size);
+      memset((void*) ip->addrs, 0, ((NDIRECT + 1) * 4));
+      iupdate(ip);
+      writei(ip, buf, off, size);
   }
 
 
