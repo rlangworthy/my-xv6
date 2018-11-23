@@ -100,6 +100,7 @@ void test3(){
   		}
 		else{
 			printf(1, "Number of bytes read : %d\n", n);
+			printf(1, "String Read : %s\n", buf2);
 			test_passed();
 			//close(fd);
 		}
