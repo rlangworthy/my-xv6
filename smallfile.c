@@ -166,7 +166,7 @@ void test4(){
 		printf(1, "Failed to get stat on the small file\n");
 			test_failed();
 	} else {
-		printf(1, "File Type: %i \n File Size: %i", (int)st.type, (int)st.size);
+		printf(1, "File Type: %d \n File Size: %d", st.type, st.size);
 	}
 
 
