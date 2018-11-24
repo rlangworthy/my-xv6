@@ -138,6 +138,7 @@ int test4(){
 		return 1;
 	 }
 }
+
 int test5(){
 	printf(1,"===Test 5. Reading and Writing Max size===\n");
 	char *fileName = "test_file.txt";
@@ -186,40 +187,66 @@ int test5(){
 		return 1;
 	}
 }
-/*
 
-	if(fstat(fd, &st) < 0){
-		printf(1, "Failed to get stat on the small file\n");
-			test_failed();
-	} else {
-		printf(1, "File Type: %i", st.type);
-	}
-
-	write(fd, buf2, MAX);
-	n=0;
-	n=write(fd, buf2, MAX);
-
-	if(n != MAX){
-		printf(1, "Write failed!\n");
-		test_failed();
+int test6(){
+	printf(1,"===Test 5. Reading and Writing past Max size===\n");
+	char *fileName = "test_file.txt";
+	char buf1[SIZE+1], buf2[SIZE+1];
+	struct stat st;
+	int fd, n, i; // Integer for file descriptor returned by open() call
+	
+	for(i = 0; i < SIZE+1; i++){
+    		buf1[i] = (char)(i+(int)'0');
+ 	 }	
+	printf(1, "Size of buffer is %d\n",strlen(buf1));
+	
+	if((fd = open(fileName, O_RDWR)) < 0){
+		printf(1, "Failed to open the small file\n");
+		test_failed(6);
+		return -1;
 	}
 	else{
-		printf(1, "Number of bytes wrote : %d\n", n);
-		printf(1, "String Read : %s\n", buf2);
-		test_passed();
-		//close(fd);
+		printf(1, "Opened the file after write\n");
 	}
-	if(fstat(fd, &st) < 0){
-		printf(1, "Failed to get stat on the small file\n");
-			test_failed();
-	} else {
-		printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
+	
+	n = write(fd, buf1, SIZE+1);
+	//attempts to write 52 bytes but read 25
+	//printf(1, "Number of bytes read : %d\n", n);
+	if(n != SIZE+1){
+		printf(1, "Write failed!\n");
+		test_failed(6);
+		return -1;
+	}
+	close(fd);
+	fd = open(fileName, O_RDWR);
+	if((n=read(fd, buf2, SIZE+1)!= SIZE+1 )){
+		printf(1, "Read failed!\n");
+		test_failed(6);
+		return -1;
+	}else{
+		for(i = 0; i < SIZE +1; i++){
+    		if(buf1[i] != buf2[i]){
+				printf(1, "Read not equal to Write\n");
+				test_failed(6);
+				return -1;
+			}
+ 	 	}
 	}
 
+	fstat(fd, &st);
+	if(st.type!=T_FILE || st.size!= SIZE+1){
+		printf(1, "Wrong Stats\n");
+		printf(1, "File Type: %d  File Size: %d\n", st.type, st.size);
+		test_failed(6);
+		return -1;
+	}
+	printf(1, "Correct Stats\n");
+	printf(1, "File Type: %d  File Size: %d\n", st.type, st.size);
 
+	test_passed(6);
+	close(fd);
+	return 1;
 }
-
-*/
 
 int main(){
 	printf(1, "==================================\n");
@@ -229,7 +256,8 @@ int main(){
 	    !(test2()) ||
 		!(test3()) ||
 		!(test4()) ||
-		!(test5()))
+		!(test5()) ||
+		!(test6()))
 		printf(1, "Test Failed!\n");
 	else
 		printf(1, "DONE\n");	
