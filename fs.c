@@ -496,18 +496,18 @@ readi(struct inode *ip, char *dst, uint off, uint n)
 //if the file is less than (NDIRECT+1)*4 we will store it in inode
 
 if (ip->type ==T_SMALLFILE){
-	cprintf("Its a smallfile. File size : %d\n", ip->size);
-	cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
+	//cprintf("Its a smallfile. File size : %d\n", ip->size);
+	//cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
 	//truncating if n>53 bytes
-	cprintf("NDIRECT : %d\n", NDIRECT);
-/*	if(off + n > ((NDIRECT + 1) * 4))
+	//cprintf("NDIRECT : %d\n", NDIRECT);
+	if(off + n > ((NDIRECT + 1) * 4))
    	 {
       		n = ((NDIRECT + 1) * 4) - off;
    	 }
-	cprintf("Final n : %d\n", n);
-*/
+	//cprintf("Final n : %d\n", n);
+
 	memmove(dst, (void*)((uint)ip->addrs+off), n);
-    	cprintf("Character read : %c\n", dst);
+    	//cprintf("Character read : %c\n", dst);
 	return n;
 	
 }
@@ -548,27 +548,27 @@ writei(struct inode *ip, char *src, uint off, uint n)
     n = MAXFILE * BSIZE-off;
 
 
-	//cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
+//cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
 //small file
 
 if(ip->type == T_SMALLFILE){
   if(off + n <= ((NDIRECT + 1) * 4)){
-      cprintf("\nWriting to a small file\n");
-      cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
+      //cprintf("\nWriting to a small file\n");
+      //cprintf("\nOffset = %d, number of bytes = %d\n", off, n);
       //Truncating number of bytes to 52 if n exceeds the space of 53 bytes
       /*if(off + n > ((NDIRECT + 1) * 4))
       {
         n = ((NDIRECT + 1) * 4) - off;
       }*/
       memmove((void*) ((uint)ip->addrs + off), src, n);
-      cprintf("Character written : %c\n", src);   
+      //cprintf("Character written : %c\n", src);   
 
 
       if(n > 0){
         ip->size = n+off;
       }
       iupdate(ip);
-      cprintf("\nFile size : %d\n", ip->size);
+      //cprintf("\nFile size : %d\n", ip->size);
       return n;
   } else{
       //code for turning small file to regular file
