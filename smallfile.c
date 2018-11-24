@@ -54,7 +54,7 @@ int test2(){
   	for(i = 0; i < SIZE; i++){
     		buf[i] = (char)(i+(int)'0');
  	 }	
-	printf(1, "Size of buffer is %d\n",strlen(buf));
+	printf(1, "Size of buffer is %d\n",SIZE);
 
 	fd = open(fileName, O_RDWR);
 	if (fd>0){
@@ -149,7 +149,7 @@ int test5(){
 	for(i = 0; i < SIZE; i++){
     		buf1[i] = (char)(i+(int)'0');
  	 }	
-	printf(1, "Size of buffer is %d\n",strlen(buf1));
+	printf(1, "Size of buffer is %d\n",strlen(SIZE));
 	
 	if((fd = open(fileName, O_RDWR)) < 0){
 		printf(1, "Failed to open the small file\n");
@@ -198,7 +198,7 @@ int test6(){
 	for(i = 0; i < SIZE+1; i++){
     		buf1[i] = (char)(i+(int)'0');
  	 }	
-	printf(1, "Size of buffer is %d\n",strlen(buf1));
+	printf(1, "Size of buffer is %d\n",strlen(SIZE+1));
 	
 	if((fd = open(fileName, O_RDWR)) < 0){
 		printf(1, "Failed to open the small file\n");
