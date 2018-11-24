@@ -79,7 +79,7 @@ int test3(){
 		printf(1,"===Test 3. Reading test_file.txt after write===\n");
 		char *fileName = "test_file.txt";
  		char buf2[SIZE];
-		struct stat st;
+		//struct stat st;
 		int fd, n; // Integer for file descriptor returned by open() call
 		
 		if((fd = open(fileName, O_RDWR)) < 0){
@@ -112,7 +112,7 @@ int test4(){
 	printf(1,"===Test 4. fstat returns correctly===\n");
 	char *fileName = "test_file.txt";
 	struct stat st;
-	int fd, n;
+	int fd;
 
 	if((fd = open(fileName, O_RDWR)) < 0){
    		printf(1, "Failed to open the small file\n");
@@ -142,7 +142,7 @@ int test5(){
 	printf(1,"===Test 5. Reading and Writing Max size===\n");
 	char *fileName = "test_file.txt";
 	char buf1[SIZE], buf2[SIZE];
-	struct stat st;
+	//struct stat st;
 	int fd, n, i; // Integer for file descriptor returned by open() call
 	
 	for(i = 0; i < SIZE; i++){
