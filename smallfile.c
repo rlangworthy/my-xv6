@@ -302,6 +302,7 @@ int test7(){
 		printf(1, "Write Error\n");
 	fstat(fd, &st);
 	printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
+	return 1;
 }
 int main(){
 	printf(1, "==================================\n");
@@ -312,7 +313,8 @@ int main(){
 		!(test3()) ||
 		!(test4()) ||
 		!(test5()) ||
-		!(test6()))
+		!(test6()) ||
+		!(test7()))
 		printf(1, "Test Failed!\n");
 	else
 		printf(1, "DONE\n");	
