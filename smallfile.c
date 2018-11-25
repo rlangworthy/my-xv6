@@ -128,7 +128,7 @@ int test4(){
     	test_failed(4);
 		return -1;
  	}else{
-		if(st.type != 4 || st.size != MAX){
+		if(st.type != T_SMALLFILE || st.size != MAX){
 			printf(1, "Fstat returned incorrect values\n");
 			test_failed(4);
 			return -1;
@@ -190,7 +190,7 @@ int test5(){
 }
 
 int test6(){
-	printf(1,"===Test 5. Reading and Writing past Max size===\n");
+	printf(1,"===Test 6. Reading and Writing past Max size===\n");
 	char *fileName = "test_file.txt";
 	char buf1[SIZE+1], buf2[SIZE+1];
 	struct stat st;
@@ -211,7 +211,7 @@ int test6(){
 	}
 	
 	n = write(fd, buf1, SIZE+1);
-	//attempts to write 52 bytes but read 25
+	//attempts to write 53
 	//printf(1, "Number of bytes read : %d\n", n);
 	if(n != SIZE+1){
 		printf(1, "Write failed!\n");
@@ -249,6 +249,60 @@ int test6(){
 	return 1;
 }
 
+int test7(){
+	printf(1,"===Test 7. Multiple Writes and Reads===\n");
+	char *fileName = "test_file2.txt";
+	char buf1[100];
+	char buf2[30];
+	struct stat st;
+	int fd, n, i;
+	
+	memset(buf1, 0, 100);
+	for(i=0;i<29;i++){
+		buf2[i] = (char)(1+(int)'a');
+	}
+	buf2[29] = '\0';
+
+	if((fd = open(fileName, O_RDWR | O_CREATE | O_SMALLFILE)) < 0){
+		printf(1, "Failed to open the small file\n");
+		test_failed(5);
+		return -1;
+	}
+	else{
+		printf(1, "Test file two created\n");
+	}
+	printf(1, "String length: %d\n", strlen(buf2));
+	n = write(fd, buf2, strlen(buf2));
+	if(n != strlen(buf2))
+		printf(1, "Write Error\n");
+	
+	if(fstat(fd, &st) < 0){
+   		printf(1, "Failed to get stat on the small file\n");
+    	test_failed(4);
+		return -1;
+ 	}else{
+		if(st.type != T_SMALLFILE || st.size != strlen(buf2)){
+			printf(1, "Fstat returned incorrect values\n");
+			test_failed(4);
+			return -1;
+		}
+		printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
+		test_passed(4);
+		close(fd);
+		return 1;
+	 }
+
+	close(fd);
+	fd = open(fileName, O_RDWR);
+	n = read(fd, buf1, strlen(buf2));
+	if(n != strlen(buf2))
+		printf(1, "Read Error\n");
+	n = write(fd, buf2, strlen(buf2));
+	if(n != strlen(buf2))
+		printf(1, "Write Error\n");
+	fstat(fd, &st);
+	printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
+}
 int main(){
 	printf(1, "==================================\n");
 	printf(1, "Test data for small file project\n");	

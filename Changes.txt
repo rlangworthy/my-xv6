@@ -7,11 +7,13 @@ fcntl.h
 	#define O_SMALLFILE 0x400  // flag O_SMALLFILE
 
 sysfile.c
-	modified sys_open, create()
+	modified sys_open(), create()
 
 fs.c
 	modified itrunc(), readi(), writei()
 
 smallfile.c
 	contains tests
-	
+
+Makefile
+	added smallfile to uprogs

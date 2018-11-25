@@ -305,20 +305,16 @@ sys_open(void)
   if(omode & O_CREATE){
 
 	//small file
-  if(omode & O_SMALLFILE){
-	  ip = create(path, T_SMALLFILE, 0, 0);
-	if (ip ==0){
-		end_op();
- 		return -1;
-		}
-       }else{	
-
-	    ip = create(path, T_FILE, 0, 0);
-   	    if(ip == 0){
-      		end_op();
-      		return -1;
-    	    }
-}  } else {
+    if(omode & O_SMALLFILE){
+      ip = create(path, T_SMALLFILE, 0, 0);
+    }else{	
+      ip = create(path, T_FILE, 0, 0);
+    }
+    if(ip == 0){
+        end_op();
+        return -1;
+    }
+  } else {
     if((ip = namei(path)) == 0){
       end_op();
       return -1;

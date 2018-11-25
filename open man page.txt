@@ -1,0 +1,33 @@
+open()
+
+SYNOPSIS
+
+#include 'user.h'
+
+int open(const char *path, int oflag)
+
+DESCIPTION
+
+Open takes a pathname and a set of flags.  It attempts to open the file at path
+with permissions described by the flags below.
+
+O_RDONLY
+    Open for reading only
+O_WRONLY
+    Open for writing only
+O_RDWR
+    Open for reading and writing
+O_CREATE 
+    If file does not exist, create file described by path
+O_SMALLFILE
+    If O_CREATE flag is set, setting O_SMALLFILE will create a small file type 
+    for containing up to 52 bytes stored in the inode structure that will
+    turn into a regular file if this size limit is exceeded
+
+RETURN VALUES
+
+Upon successful completion, the function shall open the file and return a 
+non-negative integer representing the lowest numbered unused file descriptor.  
+Otherwise, -1 shall be returned.  If the function returns -1, no file
+shall be created or modified.
+   
