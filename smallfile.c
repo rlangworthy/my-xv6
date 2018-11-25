@@ -292,8 +292,8 @@ int test7(){
 		return 1;
 	 }
 
-	close(fd);
-	fd = open(fileName, O_RDWR);
+	//close(fd);
+	//fd = open(fileName, O_RDWR);
 	n = read(fd, buf1, strlen(buf2));
 	if(n != strlen(buf2))
 		printf(1, "Read Error\n");
