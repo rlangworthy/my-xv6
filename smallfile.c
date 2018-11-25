@@ -79,6 +79,7 @@ int test3(){
 		printf(1,"===Test 3. Reading test_file.txt after write===\n");
 		char *fileName = "test_file.txt";
  		char buf2[SIZE];
+		memset(buf2, 0, SIZE);
 		//struct stat st;
 		int fd, n; // Integer for file descriptor returned by open() call
 		
