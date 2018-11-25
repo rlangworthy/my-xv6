@@ -287,9 +287,6 @@ int test7(){
 			return -1;
 		}
 		printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
-		test_passed(4);
-		close(fd);
-		return 1;
 	 }
 
 	//close(fd);
