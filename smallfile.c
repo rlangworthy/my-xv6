@@ -294,11 +294,22 @@ int test7(){
 	n = read(fd, buf1, strlen(buf2));
 	if(n != strlen(buf2))
 		printf(1, "Read Error\n");
+	for(i=0;i<strlen(buf2);i++){
+		if(buf1[i] != buf2[i])
+			printf(1, "Read Error\n");
+	}
 	n = write(fd, buf2, strlen(buf2));
 	if(n != strlen(buf2))
 		printf(1, "Write Error\n");
 	fstat(fd, &st);
 	printf(1, "File Type: %d \nFile Size: %d\n", st.type, st.size);
+	close(fd);
+	fd = open(fileName, O_RDWR);
+	n = read(fd, buf1, 2*strlen(buf2));
+	for(i=0;i<strlen(buf2);i++){
+		if(buf1[i] != buf2[i%strlen(buf2)])
+			printf(1, "Read Error\n");
+	}
 	return 1;
 }
 int main(){
