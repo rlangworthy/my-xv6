@@ -307,7 +307,7 @@ int test7(){
 	fd = open(fileName, O_RDWR);
 	n = read(fd, buf1, 2*strlen(buf2));
 	for(i=0;i<strlen(buf2);i++){
-		if(buf1[i] != buf2[i%strlen(buf2)])
+		if(buf1[i+strlen(buf2)] != buf2[i])
 			printf(1, "Read Error\n");
 	}
 	return 1;
