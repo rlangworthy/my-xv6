@@ -58,12 +58,11 @@ int test2(){
     int fd; // Integer for file descriptor returned by open() call 
  	char buf[SIZE];
   	int n;
-  	int i;
-  
+
 	initialize_buf(buf, SIZE);
 	printf(1, "Size of buffer is %d\n",SIZE);
 
-	fd = open_test(fileName, O_RDWR, 2);
+	fd = test_open(fileName, O_RDWR, 2);
 	if (fd>0){
 		n = write(fd, buf, MAX);
 		if (n==MAX){
@@ -87,7 +86,7 @@ int test3(){
 		//struct stat st;
 		int fd, n; // Integer for file descriptor returned by open() call
 		
-		if((fd = open_test(fileName, O_RDWR, 3)) < 0)
+		if((fd = test_open(fileName, O_RDWR, 3)) < 0)
 			return -1;
 
 		n = read(fd, buf2, MAX+10);
@@ -112,7 +111,7 @@ int test4(){
 	struct stat st;
 	int fd;
 
-	if((fd = open_test(fileName, O_RDWR, 4)) < 0)
+	if((fd = test_open(fileName, O_RDWR, 4)) < 0)
 		return -1;
 			
 	if(fstat(fd, &st) < 0){
@@ -141,7 +140,7 @@ int test5(){
 	
 	initialize_buf(buf1, SIZE);
 	
-	if((fd = open_test(fileName, O_RDWR, 5)) < 0)
+	if((fd = test_open(fileName, O_RDWR, 5)) < 0)
 		return -1;
 	
 	n = write(fd, buf1, SIZE);
@@ -182,7 +181,7 @@ int test6(){
 	initialize_buf(buf1, SIZE +1);
 	printf(1, "Size of buffer is %d\n",(SIZE+1));
 	
-	if((fd = open_test(fileName, O_RDWR, 6)) < 0){
+	if((fd = test_open(fileName, O_RDWR, 6)) < 0){
 		return -1;
 
 	n = write(fd, buf1, SIZE+1);
@@ -287,6 +286,7 @@ int test7(){
 	}
 	return 1;
 }
+
 int main(){
 	printf(1, "==================================\n");
 	printf(1, "Test data for small file project\n");	
@@ -303,6 +303,7 @@ int main(){
 		printf(1, "DONE\n");	
 
 	exit();
+	return 1;
 }
 
 
