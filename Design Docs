@@ -1,0 +1,4 @@
+52 bytes
+open() - open a small file
+read() - check file type, if it's small, read from the indirect array
+write() - upgrade file to normal size if amount of writing is too large

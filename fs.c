@@ -412,6 +412,22 @@ itrunc(struct inode *ip)
   struct buf *bp;
   uint *a;
 
+  //BEGIN PROJECT 4 CHANGES
+  //zero out the addrs array and returns
+ if(ip->type == T_SMALLFILE)
+  {
+    for(i = 0; i <= NDIRECT; i++){
+      if(ip->addrs[i]){
+         ip->addrs[i] = 0;
+       }
+     }
+    ip->size = 0;
+    iupdate(ip);
+    return;
+  }
+//END PROJECT 4 CHANGES
+
+
   for(i = 0; i < NDIRECT; i++){
     if(ip->addrs[i]){
       bfree(ip->dev, ip->addrs[i]);
@@ -464,15 +480,41 @@ readi(struct inode *ip, char *dst, uint off, uint n)
 
   if(off > ip->size || off + n < off)
     return -1;
+
+
   if(off + n > ip->size)
     n = ip->size - off;
+//BEGIN PROJECT 4 CHANGES
+//small file
+//the inode has slots for block addresses: NDIRECT for 12 direct pointers and
+// 1 for INDIRECT pointer. Thus we can store  (NDIRECT+1)*4
 
-  for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+//if the file is less than (NDIRECT+1)*4 we will store it in inode
+
+if (ip->type ==T_SMALLFILE){
+	//truncating if n + off > 52 bytes
+	if(off + n > ((NDIRECT + 1) * 4))
+   	 {
+      		n = ((NDIRECT + 1) * 4) - off;
+   	 }
+
+	memmove(dst, (void*)((uint)ip->addrs+off), n);
+	return n;
+}
+//END PROJECT 4 CHANGES
+for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
+    uint sector_number = bmap(ip, off/BSIZE);
+    if(sector_number == 0){ //failed to find block
+      panic("readi: trying to read a block that was never allocated");
+    }
+    
+    bp = bread(ip->dev, sector_number);
     m = min(n - tot, BSIZE - off%BSIZE);
     memmove(dst, bp->data + off%BSIZE, m);
     brelse(bp);
   }
+
+
   return n;
 }
 
@@ -494,10 +536,51 @@ writei(struct inode *ip, char *src, uint off, uint n)
   if(off > ip->size || off + n < off)
     return -1;
   if(off + n > MAXFILE*BSIZE)
-    return -1;
+    n = MAXFILE * BSIZE-off;
+
+
+//cprintf("\nMAXFILE is %d, and BSIZE is %d", MAXFILE,BSIZE);
+//BEGIN PROJECT 4 CHANGES
+//small file
+if(ip->type == T_SMALLFILE){
+  //if the write will fit in the NDIRECT array, add it there
+  if(off + n <= ((NDIRECT + 1) * 4)){
+      memmove((void*) ((uint)ip->addrs + off), src, n);
+      
+      if(n > 0){
+        ip->size = n+off;
+      }
+      
+      iupdate(ip);
+      return n;
+  } else{
+      //code for turning small file to regular file if the write is too large
+      ip->type = T_FILE;
+      int size = ip->size;
+      char buf[((NDIRECT + 1) * 4)];
+      memmove(buf, (void*)ip->addrs, ip->size);
+      memset((void*) ip->addrs, 0, ((NDIRECT + 1) * 4));
+      iupdate(ip);
+      writei(ip, buf, off, size);
+    }
+  }
+//END PROJECT 4 CHANGES
+
+	
+
 
   for(tot=0; tot<n; tot+=m, off+=m, src+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+
+ 	uint sector_number = bmap(ip, off/BSIZE);
+        if(sector_number == 0){ //failed to find block
+     		 n = tot; //return number of bytes written so far
+      		break;
+   	 }	
+
+
+
+
+    bp = bread(ip->dev, sector_number);
     m = min(n - tot, BSIZE - off%BSIZE);
     memmove(bp->data + off%BSIZE, src, m);
     log_write(bp);

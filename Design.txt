@@ -1,0 +1,22 @@
+Design:
+
+If the file is of 52 bytes of less, its stored in the node of the file itself.
+
+The modifications were done in fs.c file, specifically: in readi(), writei() 
+and trunci() fucntions. In readi(), the file is directly read from the inode's
+ address pointers if the file size is less than 52 bytes. 
+
+In sys_open(), a handler for the O_SMALLFILE flag was added.
+
+In create(), the T_SMALLFILE type is added to the new file if the O_SMALLFILE
+ flag is set.
+
+In writei(), the file is written into the address blocks if the file is less
+ than 52 bytes. If more than 52 bytes are written the file is changed into the
+ default file type and the write proceeds as normal.
+
+In readi(), the data is read and returned directly from the inode struct
+ without a call to bmap.  Attempt to read more than 52 bytes will be truncated.
+ 
+In trunci(), the blocks corresponding to the direct and 
+ indirect pointers are not removed if the files are of the type T_SMALLFILE.
