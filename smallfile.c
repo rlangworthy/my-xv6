@@ -14,6 +14,23 @@ void test_passed(int n){
 	printf(1, "TEST %d PASSED\n", n);	
 }
 
+int test_open(char *filename, int flags, int test){
+	int fd;
+	if((fd = open(fileName, flags)) < 0){
+   		printf(1, "Failed to open the small file\n");
+    	test_failed(test);
+		return -1;
+  	}else{
+		printf(1, "Opened %s\n", filename);
+		return fd;
+	}
+}
+void initialize_buf(char *buf, size){
+	int i;
+	for(i = 0; i < size; i++){
+		buf[i] = (char)(i+(int)'0');
+	}
+}
 
 #define MAX 25
 #define NBLOCKS (NDIRECT+1)  //12+1
@@ -25,21 +42,13 @@ int test1(){
 	
 	char *fileName = "test_file.txt";
 	int fd; // Integer for file descriptor returned by open() call 
-	fd = open(fileName,O_CREATE | O_SMALLFILE | O_RDWR); 
 	// ORDWR - open file for reading and writing
-	if (fd==-1){
-		printf(1,"Failed to create a small file\n");
-		test_failed(1);
+	if ((fd=test_open(fileName, O_CREATE | O_SMALLFILE | O_RDWR, 1) > 0){
+		test_passed(1);
+		close(fd);
 		return -1;
 	}
-	if (fd>0){
-		printf(1, "test_file.txt fd is %d\n",fd);
-		printf(1, "Opening  smallFileTest.txt\n");
-		test_passed(1);
-		
-	}	
-	close(fd);
-	return 1;
+	return -1;
 }
 
 int test2(){
@@ -51,12 +60,10 @@ int test2(){
   	int n;
   	int i;
   
-  	for(i = 0; i < SIZE; i++){
-    		buf[i] = (char)(i+(int)'0');
- 	 }	
+	initialize_buf(buf, SIZE);
 	printf(1, "Size of buffer is %d\n",SIZE);
 
-	fd = open(fileName, O_RDWR);
+	fd = open_test(fileName, O_RDWR, 2);
 	if (fd>0){
 		n = write(fd, buf, MAX);
 		if (n==MAX){
@@ -68,11 +75,8 @@ int test2(){
 			}
 		close(fd);
 		return 1;
-	} else {
-		printf(1,"Failed to create a small file\n");
-		test_failed(2);
-		return -1;
 	}
+	return -1;
 }
 
 int test3(){
@@ -83,14 +87,8 @@ int test3(){
 		//struct stat st;
 		int fd, n; // Integer for file descriptor returned by open() call
 		
-		if((fd = open(fileName, O_RDWR)) < 0){
-   			printf(1, "Failed to open the small file\n");
-    		test_failed(3);
+		if((fd = open_test(fileName, O_RDWR, 3)) < 0)
 			return -1;
-  		}
-		else{
-			printf(1, "Opened the file after write\n");
-		}
 
 		n = read(fd, buf2, MAX+10);
 		//attempts to read 35 bytes but read 25
@@ -102,7 +100,6 @@ int test3(){
   		}
 		else{
 			printf(1, "Number of bytes read : %d\n", n);
-			printf(1, "String Read : %s\n", buf2);
 			test_passed(3);
 			close(fd);
 			return 1;
@@ -115,13 +112,8 @@ int test4(){
 	struct stat st;
 	int fd;
 
-	if((fd = open(fileName, O_RDWR)) < 0){
-   		printf(1, "Failed to open the small file\n");
-    	test_failed(4);
+	if((fd = open_test(fileName, O_RDWR, 4)) < 0)
 		return -1;
-  	}else{
-		printf(1, "Opened test_file.txt\n");
-	}
 			
 	if(fstat(fd, &st) < 0){
    		printf(1, "Failed to get stat on the small file\n");
@@ -147,23 +139,13 @@ int test5(){
 	//struct stat st;
 	int fd, n, i; // Integer for file descriptor returned by open() call
 	
-	for(i = 0; i < SIZE; i++){
-    		buf1[i] = (char)(i+(int)'0');
- 	 }	
-	printf(1, "Size of buffer is %d\n",(SIZE));
+	initialize_buf(buf1, SIZE);
 	
-	if((fd = open(fileName, O_RDWR)) < 0){
-		printf(1, "Failed to open the small file\n");
-		test_failed(5);
+	if((fd = open_test(fileName, O_RDWR, 5)) < 0)
 		return -1;
-	}
-	else{
-		printf(1, "Opened the file after write\n");
-	}
 	
 	n = write(fd, buf1, SIZE);
-	//attempts to write 52 bytes but read 25
-	//printf(1, "Number of bytes read : %d\n", n);
+
 	if(n != SIZE){
 		printf(1, "Write failed!\n");
 		test_failed(5);
@@ -176,6 +158,7 @@ int test5(){
 		test_failed(5);
 		return -1;
 	}else{
+		//check read values vs write values
 		for(i = 0; i < SIZE; i++){
     		if(buf1[i] != buf2[i]){
 				printf(1, "Read not equal to Write\n");
@@ -196,20 +179,12 @@ int test6(){
 	struct stat st;
 	int fd, n, i; // Integer for file descriptor returned by open() call
 	
-	for(i = 0; i < SIZE+1; i++){
-    		buf1[i] = (char)(i+(int)'0');
- 	 }	
+	initialize_buf(buf1, SIZE +1);
 	printf(1, "Size of buffer is %d\n",(SIZE+1));
 	
-	if((fd = open(fileName, O_RDWR)) < 0){
-		printf(1, "Failed to open the small file\n");
-		test_failed(6);
+	if((fd = open_test(fileName, O_RDWR, 6)) < 0){
 		return -1;
-	}
-	else{
-		printf(1, "Opened the file after write\n");
-	}
-	
+		
 	n = write(fd, buf1, SIZE+1);
 	//attempts to write 53
 	//printf(1, "Number of bytes read : %d\n", n);
