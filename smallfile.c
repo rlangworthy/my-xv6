@@ -14,18 +14,18 @@ void test_passed(int n){
 	printf(1, "TEST %d PASSED\n", n);	
 }
 
-int test_open(char *filename, int flags, int test){
+int test_open(char *fileName, int flags, int test){
 	int fd;
 	if((fd = open(fileName, flags)) < 0){
    		printf(1, "Failed to open the small file\n");
     	test_failed(test);
 		return -1;
   	}else{
-		printf(1, "Opened %s\n", filename);
+		printf(1, "Opened %s\n", fileName);
 		return fd;
 	}
 }
-void initialize_buf(char *buf, size){
+void initialize_buf(char *buf, int size){
 	int i;
 	for(i = 0; i < size; i++){
 		buf[i] = (char)(i+(int)'0');
@@ -43,7 +43,7 @@ int test1(){
 	char *fileName = "test_file.txt";
 	int fd; // Integer for file descriptor returned by open() call 
 	// ORDWR - open file for reading and writing
-	if ((fd=test_open(fileName, O_CREATE | O_SMALLFILE | O_RDWR, 1) > 0){
+	if ((fd=test_open(fileName, O_CREATE | O_SMALLFILE | O_RDWR, 1)) > 0){
 		test_passed(1);
 		close(fd);
 		return -1;
@@ -184,7 +184,7 @@ int test6(){
 	
 	if((fd = open_test(fileName, O_RDWR, 6)) < 0){
 		return -1;
-		
+
 	n = write(fd, buf1, SIZE+1);
 	//attempts to write 53
 	//printf(1, "Number of bytes read : %d\n", n);
