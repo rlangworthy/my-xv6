@@ -181,7 +181,7 @@ int test6(){
 	initialize_buf(buf1, SIZE +1);
 	printf(1, "Size of buffer is %d\n",(SIZE+1));
 	
-	if((fd = test_open(fileName, O_RDWR, 6)) < 0){
+	if((fd = test_open(fileName, O_RDWR, 6)) < 0)
 		return -1;
 
 	n = write(fd, buf1, SIZE+1);
@@ -221,6 +221,7 @@ int test6(){
 	test_passed(6);
 	close(fd);
 	return 1;
+	
 }
 
 int test7(){
