@@ -135,7 +135,7 @@ int test5(){
 	printf(1,"===Test 5. Reading and Writing Max size===\n");
 	char *fileName = "test_file.txt";
 	char buf1[SIZE], buf2[SIZE];
-	//struct stat st;
+	struct stat st;
 	int fd, n, i; // Integer for file descriptor returned by open() call
 	
 	initialize_buf(buf1, SIZE);
@@ -165,6 +165,17 @@ int test5(){
 				return -1;
 			}
  	 	}
+		if(fstat(fd, &st) < 0){
+   		printf(1, "Failed to get stat on the small file\n");
+    	test_failed(4);
+		return -1;
+ 	}else{
+		if(st.type != T_SMALLFILE || st.size != SIZE){
+			printf(1, "Fstat returned incorrect values\n");
+			test_failed(4);
+			return -1;
+		}
+	 }
 		test_passed(5);
 		close(fd);
 		return 1;
