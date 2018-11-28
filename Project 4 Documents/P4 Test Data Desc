@@ -1,0 +1,9 @@
+Test 1: open a small file
+Test 2: write to small file, checking that only the correct number of bytes is written
+Test 3: read from that same small file, checking that it will only read up to bytes written
+Test 4: check that fstat on a small file has the correct file type and size
+Test 5: check that 52 bytes can be written to a small file and read successfully
+Test 6: check that writing past 52 bytes changes file type while still allowing successful reads
+Test 7: same as test 6 but with consecutive writes and reads
+
+Error conditions are handled by code we didn't touch, and can be tested with the default usertests program.

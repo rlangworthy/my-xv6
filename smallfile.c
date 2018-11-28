@@ -14,18 +14,18 @@ void test_passed(int n){
 	printf(1, "TEST %d PASSED\n", n);	
 }
 
-int test_open(char *filename, int flags, int test){
+int test_open(char *fileName, int flags, int test){
 	int fd;
 	if((fd = open(fileName, flags)) < 0){
    		printf(1, "Failed to open the small file\n");
     	test_failed(test);
 		return -1;
   	}else{
-		printf(1, "Opened %s\n", filename);
+		printf(1, "Opened %s\n", fileName);
 		return fd;
 	}
 }
-void initialize_buf(char *buf, size){
+void initialize_buf(char *buf, int size){
 	int i;
 	for(i = 0; i < size; i++){
 		buf[i] = (char)(i+(int)'0');
@@ -43,7 +43,7 @@ int test1(){
 	char *fileName = "test_file.txt";
 	int fd; // Integer for file descriptor returned by open() call 
 	// ORDWR - open file for reading and writing
-	if ((fd=test_open(fileName, O_CREATE | O_SMALLFILE | O_RDWR, 1) > 0){
+	if ((fd=test_open(fileName, O_CREATE | O_SMALLFILE | O_RDWR, 1)) > 0){
 		test_passed(1);
 		close(fd);
 		return -1;
@@ -58,12 +58,11 @@ int test2(){
     int fd; // Integer for file descriptor returned by open() call 
  	char buf[SIZE];
   	int n;
-  	int i;
-  
+
 	initialize_buf(buf, SIZE);
 	printf(1, "Size of buffer is %d\n",SIZE);
 
-	fd = open_test(fileName, O_RDWR, 2);
+	fd = test_open(fileName, O_RDWR, 2);
 	if (fd>0){
 		n = write(fd, buf, MAX);
 		if (n==MAX){
@@ -87,7 +86,7 @@ int test3(){
 		//struct stat st;
 		int fd, n; // Integer for file descriptor returned by open() call
 		
-		if((fd = open_test(fileName, O_RDWR, 3)) < 0)
+		if((fd = test_open(fileName, O_RDWR, 3)) < 0)
 			return -1;
 
 		n = read(fd, buf2, MAX+10);
@@ -112,7 +111,7 @@ int test4(){
 	struct stat st;
 	int fd;
 
-	if((fd = open_test(fileName, O_RDWR, 4)) < 0)
+	if((fd = test_open(fileName, O_RDWR, 4)) < 0)
 		return -1;
 			
 	if(fstat(fd, &st) < 0){
@@ -136,12 +135,12 @@ int test5(){
 	printf(1,"===Test 5. Reading and Writing Max size===\n");
 	char *fileName = "test_file.txt";
 	char buf1[SIZE], buf2[SIZE];
-	//struct stat st;
+	struct stat st;
 	int fd, n, i; // Integer for file descriptor returned by open() call
 	
 	initialize_buf(buf1, SIZE);
 	
-	if((fd = open_test(fileName, O_RDWR, 5)) < 0)
+	if((fd = test_open(fileName, O_RDWR, 5)) < 0)
 		return -1;
 	
 	n = write(fd, buf1, SIZE);
@@ -166,6 +165,17 @@ int test5(){
 				return -1;
 			}
  	 	}
+		if(fstat(fd, &st) < 0){
+   		printf(1, "Failed to get stat on the small file\n");
+    	test_failed(4);
+		return -1;
+ 	}else{
+		if(st.type != T_SMALLFILE || st.size != SIZE){
+			printf(1, "Fstat returned incorrect values\n");
+			test_failed(4);
+			return -1;
+		}
+	 }
 		test_passed(5);
 		close(fd);
 		return 1;
@@ -182,9 +192,9 @@ int test6(){
 	initialize_buf(buf1, SIZE +1);
 	printf(1, "Size of buffer is %d\n",(SIZE+1));
 	
-	if((fd = open_test(fileName, O_RDWR, 6)) < 0){
+	if((fd = test_open(fileName, O_RDWR, 6)) < 0)
 		return -1;
-		
+
 	n = write(fd, buf1, SIZE+1);
 	//attempts to write 53
 	//printf(1, "Number of bytes read : %d\n", n);
@@ -222,6 +232,7 @@ int test6(){
 	test_passed(6);
 	close(fd);
 	return 1;
+	
 }
 
 int test7(){
@@ -287,6 +298,7 @@ int test7(){
 	}
 	return 1;
 }
+
 int main(){
 	printf(1, "==================================\n");
 	printf(1, "Test data for small file project\n");	
@@ -303,6 +315,7 @@ int main(){
 		printf(1, "DONE\n");	
 
 	exit();
+	return 1;
 }
 
 
